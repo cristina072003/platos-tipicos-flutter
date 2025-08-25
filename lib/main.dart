@@ -8,18 +8,15 @@ import './providers/auth_provider.dart';
 import './providers/platos_provider.dart';
 import './screens/login_screen.dart';
 import './screens/platos_list_screen.dart';
-import './screens/plato_detail_screen.dart';
 import './api/ubicaciones_api.dart';
 
 Future<void> main() async {
-  // Carga variables de entorno desde un archivo o usa valores por defecto
   try {
     await dotenv.load(fileName: ".env");
   } catch (e) {
-    // Si no existe el archivo .env, usar valores por defecto
     print("No se encontró archivo .env, usando valores por defecto");
   }
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -37,14 +34,11 @@ class MyApp extends StatelessWidget {
       ],
       child: Consumer<AuthProvider>(
         builder: (ctx, auth, _) => MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: 'Platos Cochabamba',
           theme: ThemeData(
-            primarySwatch: Colors.blue,
-            // accentColor ha sido reemplazado por colorScheme en versiones recientes
-            colorScheme: ColorScheme.fromSwatch(
-              primarySwatch: Colors.blue,
-              accentColor: Colors.amber, // Esto reemplaza a accentColor
-            ),
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
             fontFamily: 'Lato',
           ),
           home: const PlatosScreen(),
@@ -58,7 +52,7 @@ class PlatosScreen extends StatefulWidget {
   const PlatosScreen({super.key});
 
   @override
-  _PlatosScreenState createState() => _PlatosScreenState();
+  State<PlatosScreen> createState() => _PlatosScreenState();
 }
 
 class _PlatosScreenState extends State<PlatosScreen> {
@@ -72,6 +66,8 @@ class _PlatosScreenState extends State<PlatosScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     final Map<String, List<Map<String, dynamic>>> categorias = {
       'Desayuno': [
         {
@@ -181,89 +177,41 @@ class _PlatosScreenState extends State<PlatosScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Platos Cochabamba'),
-          backgroundColor: Colors.blue,
+          centerTitle: true,
+          backgroundColor: cs.primary,
+          foregroundColor: cs.onPrimary,
           bottom: TabBar(
-            tabs: categorias.keys
-                .map((categoria) => Tab(text: categoria))
-                .toList(),
+            indicatorColor: cs.onPrimary,
+            labelColor: cs.onPrimary,
+            unselectedLabelColor: cs.onPrimary.withOpacity(0.7),
+            tabs: categorias.keys.map((categoria) => Tab(text: categoria)).toList(),
           ),
         ),
         body: TabBarView(
           children: categorias.keys.map((categoria) {
             final platos = categorias[categoria]!;
             return GridView.builder(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(12),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 3 / 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
+                childAspectRatio: 0.85,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
               ),
               itemCount: platos.length,
-              itemBuilder: (ctx, i) => GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (ctx) => PlatoDetailScreen(
-                        nombre: platos[i]['nombre'] ?? 'Nombre no disponible',
-                        imagen: platos[i]['imagen'] ?? '',
-                        descripcion:
-                        platos[i]['descripcion'] ??
-                            'Descripción no disponible',
-                        precio: platos[i]['precio'] ?? 0.0,
-                        receta: platos[i]['receta'] ?? 'Receta no disponible',
-                        videoUrl:
-                        platos[i]['videoUrl'] ?? 'https://www.youtube.com',
-                        ubicacion:
-                        platos[i]['ubicacion'] ?? 'Ubicación no disponible',
-                        ubicacionUrl:
-                        platos[i]['ubicacionUrl'] ??
-                            'https://www.google.com/maps',
-                      ),
-                    ),
-                  );
-                },
-                child: Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: CachedNetworkImage(
-                            imageUrl: platos[i]['imagen'] ?? '',
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            placeholder: (context, url) => Container(
-                              color: Colors.grey[200],
-                              child: const Center(
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              ),
-                            ),
-                            errorWidget: (context, url, error) => Container(
-                              color: Colors.grey[300],
-                              child: const Center(
-                                child: Icon(Icons.broken_image),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        platos[i]['nombre'] ?? 'Nombre no disponible',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              itemBuilder: (ctx, i) {
+                final p = platos[i];
+                return _PlatoCard(
+                  nombre: p['nombre'] ?? 'Nombre',
+                  imagenUrl: p['imagen'] ?? '',
+                  descripcion: p['descripcion'] ?? '',
+                  precio: (p['precio'] ?? 0.0) as double,
+                  receta: p['receta'] ?? '',
+                  videoUrl: p['videoUrl'] ?? '',
+                  ubicacion: p['ubicacion'] ?? '',
+                  ubicacionUrl: p['ubicacionUrl'] ?? '',
+                );
+              },
             );
           }).toList(),
         ),
@@ -277,6 +225,108 @@ class _PlatosScreenState extends State<PlatosScreen> {
     } else {
       throw 'No se pudo abrir el enlace: $url';
     }
+  }
+}
+
+class _PlatoCard extends StatelessWidget {
+  final String nombre;
+  final String imagenUrl;
+  final String descripcion;
+  final double precio;
+  final String receta;
+  final String videoUrl;
+  final String ubicacion;
+  final String ubicacionUrl;
+
+  const _PlatoCard({
+    required this.nombre,
+    required this.imagenUrl,
+    required this.descripcion,
+    required this.precio,
+    required this.receta,
+    required this.videoUrl,
+    required this.ubicacion,
+    required this.ubicacionUrl,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    return Card(
+      clipBehavior: Clip.hardEdge,
+      elevation: 1,
+      surfaceTintColor: cs.primary,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (ctx) => PlatoDetailScreen(
+                nombre: nombre,
+                imagen: imagenUrl,
+                descripcion: descripcion,
+                precio: precio,
+                receta: receta,
+                videoUrl: videoUrl,
+                ubicacion: ubicacion,
+                ubicacionUrl: ubicacionUrl,
+              ),
+            ),
+          );
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Imagen con Hero + overlay de precio
+            Expanded(
+              child: Stack(
+                children: [
+                  Hero(
+                    tag: imagenUrl.isNotEmpty ? imagenUrl : nombre,
+                    child: CachedNetworkImage(
+                      imageUrl: imagenUrl,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      placeholder: (context, url) => Container(
+                        color: Colors.grey[200],
+                        child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: Colors.grey[300],
+                        child: const Center(child: Icon(Icons.broken_image)),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: 8,
+                    bottom: 8,
+                    child: Chip(
+                      label: Text('Bs. ${precio.toStringAsFixed(2)}'),
+                      backgroundColor: cs.primaryContainer,
+                      labelStyle: TextStyle(color: cs.onPrimaryContainer),
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+              child: Text(
+                nombre,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -312,69 +362,97 @@ class PlatoDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Scaffold(
-      appBar: AppBar(title: Text(nombre), backgroundColor: Colors.blue),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: CachedNetworkImage(
-                imageUrl: imagen,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                placeholder: (context, url) => Container(
-                  height: 200,
-                  color: Colors.grey[200],
-                  child: const Center(
-                    child: CircularProgressIndicator(),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            expandedHeight: 260,
+            backgroundColor: cs.primary,
+            foregroundColor: cs.onPrimary,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(nombre, maxLines: 1, overflow: TextOverflow.ellipsis),
+              background: Hero(
+                tag: imagen.isNotEmpty ? imagen : nombre,
+                child: CachedNetworkImage(
+                  imageUrl: imagen,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey[200],
+                    child: const Center(child: CircularProgressIndicator()),
                   ),
-                ),
-                errorWidget: (context, url, error) => Container(
-                  height: 200,
-                  color: Colors.grey[300],
-                  child: const Center(
-                    child: Icon(Icons.broken_image, size: 48),
+                  errorWidget: (context, url, error) => Container(
+                    color: Colors.grey[300],
+                    child: const Center(child: Icon(Icons.broken_image, size: 48)),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 10),
-            const Text(
-              'Descripción:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      Chip(
+                        avatar: const Icon(Icons.sell, size: 18),
+                        label: Text('Bs. ${precio.toStringAsFixed(2)}'),
+                        backgroundColor: cs.secondaryContainer,
+                        labelStyle: TextStyle(color: cs.onSecondaryContainer),
+                      ),
+                      Chip(
+                        avatar: const Icon(Icons.place, size: 18),
+                        label: Text(ubicacion),
+                        backgroundColor: cs.surfaceVariant,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Descripción',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(descripcion),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Receta',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(receta),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      FilledButton.icon(
+                        onPressed: () => _launchURL(videoUrl),
+                        icon: const Icon(Icons.play_circle_fill),
+                        label: const Text('Ver video'),
+                      ),
+                      const SizedBox(width: 12),
+                      OutlinedButton.icon(
+                        onPressed: () => _launchURL(ubicacionUrl),
+                        icon: const Icon(Icons.map),
+                        label: const Text('Ver en Maps'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            Text(descripcion),
-            const SizedBox(height: 10),
-            Text(
-              'Precio: Bs. $precio',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Receta:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            Text(receta),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () => _launchURL(videoUrl),
-              child: const Text('Ver video de preparación'),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Ubicación:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            Text(ubicacion),
-            ElevatedButton(
-              onPressed: () => _launchURL(ubicacionUrl),
-              child: const Text('Ver en Google Maps'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
