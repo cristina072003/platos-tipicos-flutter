@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import './providers/auth_provider.dart';
 import './providers/platos_provider.dart';
@@ -75,7 +76,7 @@ class _PlatosScreenState extends State<PlatosScreen> {
       'Desayuno': [
         {
           'nombre': 'Salteña',
-          'imagen': 'assets/salteña.jpg',
+          'imagen': 'https://i.pinimg.com/736x/12/23/a9/1223a95cc29983c68a4339e4afb848d4.jpg',
           'descripcion': 'Empanada rellena con carne y caldo.',
           'precio': 10.0,
           'receta': '1. Preparar masa. 2. Cocinar relleno. 3. Hornear.',
@@ -85,7 +86,7 @@ class _PlatosScreenState extends State<PlatosScreen> {
         },
         {
           'nombre': 'Relleno',
-          'imagen': 'assets/relleno.jpg',
+          'imagen': 'https://i.pinimg.com/1200x/4f/20/24/4f2024dc15495e606ecaf89f4180d92f.jpg',
           'descripcion': 'Plato típico con carne rellena y papas.',
           'precio': 15.0,
           'receta': '1. Preparar carne rellena. 2. Cocinar papas.',
@@ -95,7 +96,7 @@ class _PlatosScreenState extends State<PlatosScreen> {
         },
         {
           'nombre': 'Api con pastel',
-          'imagen': 'assets/api_pastel.jpg',
+          'imagen': 'https://i.pinimg.com/1200x/9e/28/93/9e2893ad132da91cf708e6ed16a77f43.jpg',
           'descripcion': 'Bebida caliente de maíz morado con pastel.',
           'precio': 8.0,
           'receta': '1. Preparar api. 2. Freír pastel.',
@@ -105,7 +106,7 @@ class _PlatosScreenState extends State<PlatosScreen> {
         },
         {
           'nombre': 'Empanadas Wistupiku',
-          'imagen': 'assets/wistupiku.jpg',
+          'imagen': 'https://i.pinimg.com/736x/4c/fe/a8/4cfea82f4027c934a99cd8a4ebad3e4c.jpg',
           'descripcion': 'Empanadas típicas de Cochabamba.',
           'precio': 12.0,
           'receta': '1. Preparar masa. 2. Cocinar relleno. 3. Hornear.',
@@ -118,31 +119,31 @@ class _PlatosScreenState extends State<PlatosScreen> {
         {
           'nombre': 'Silpancho',
           'imagen':
-              'https://i.pinimg.com/736x/3a/f6/03/3af603235909c360a2465c3578eb21f1.jpg',
+          'https://i.pinimg.com/736x/3a/f6/03/3af603235909c360a2465c3578eb21f1.jpg',
           'descripcion':
-              'Plato típico de Cochabamba con carne apanada, arroz y huevo.',
+          'Plato típico de Cochabamba con carne apanada, arroz y huevo.',
           'precio': 25.0,
           'receta':
-              '1. Preparar carne apanada. 2. Cocinar arroz y papas. 3. Freír huevo.',
+          '1. Preparar carne apanada. 2. Cocinar arroz y papas. 3. Freír huevo.',
           'videoUrl': 'https://www.youtube.com/watch?v=example',
           'ubicacion': 'Restaurante típico en Cochabamba.',
           'ubicacionUrl': 'https://www.google.com/maps?q=Quillacollo',
         },
         {
           'nombre': 'Pique Macho',
-          'imagen': 'assets/pique macho.jpg',
+          'imagen': 'https://i.pinimg.com/736x/75/78/e7/7578e71c7245f487a2d7a37ea2cbf646.jpg',
           'descripcion':
-              'Plato típico con carne, papas fritas y salsa picante.',
+          'Plato típico con carne, papas fritas y salsa picante.',
           'precio': 30.0,
           'receta':
-              '1. Cocinar carne. 2. Freír papas. 3. Preparar salsa picante.',
+          '1. Cocinar carne. 2. Freír papas. 3. Preparar salsa picante.',
           'videoUrl': 'https://www.youtube.com/watch?v=example2',
           'ubicacion': 'Restaurante típico en Cochabamba.',
           'ubicacionUrl': 'https://www.google.com/maps?q=Quillacollo',
         },
         {
           'nombre': 'Chicharrón',
-          'imagen': 'assets/chicharron.jpg',
+          'imagen': 'https://i.pinimg.com/1200x/60/1e/0e/601e0e8bedc0d4c27d7c68d2092974a3.jpg',
           'descripcion': 'Plato típico con carne de cerdo frita y mote.',
           'precio': 35.0,
           'receta': '1. Freír carne de cerdo. 2. Cocinar mote.',
@@ -152,7 +153,7 @@ class _PlatosScreenState extends State<PlatosScreen> {
         },
         {
           'nombre': 'Sopa de Maní',
-          'imagen': 'assets/sopa mani.jpg',
+          'imagen': 'https://i.pinimg.com/736x/d9/55/bd/d955bd3d164e8d62f9c32b0ab7253b5c.jpg',
           'descripcion': 'Sopa típica con maní, carne y papas.',
           'precio': 20.0,
           'receta': '1. Preparar caldo con maní. 2. Cocinar carne y papas.',
@@ -164,7 +165,7 @@ class _PlatosScreenState extends State<PlatosScreen> {
       'Cena': [
         {
           'nombre': 'Anticucho',
-          'imagen': 'assets/anticucho.jpg',
+          'imagen': 'https://i.pinimg.com/736x/57/68/69/576869dac070f70e8518c1025b75d3b6.jpg',
           'descripcion': 'Plato típico con carne a la parrilla y papas.',
           'precio': 18.0,
           'receta': '1. Preparar carne. 2. Cocinar papas. 3. Servir con salsa.',
@@ -205,18 +206,18 @@ class _PlatosScreenState extends State<PlatosScreen> {
                     MaterialPageRoute(
                       builder: (ctx) => PlatoDetailScreen(
                         nombre: platos[i]['nombre'] ?? 'Nombre no disponible',
-                        imagen: platos[i]['imagen'] ?? 'assets/default.jpg',
+                        imagen: platos[i]['imagen'] ?? '',
                         descripcion:
-                            platos[i]['descripcion'] ??
+                        platos[i]['descripcion'] ??
                             'Descripción no disponible',
                         precio: platos[i]['precio'] ?? 0.0,
                         receta: platos[i]['receta'] ?? 'Receta no disponible',
                         videoUrl:
-                            platos[i]['videoUrl'] ?? 'https://www.youtube.com',
+                        platos[i]['videoUrl'] ?? 'https://www.youtube.com',
                         ubicacion:
-                            platos[i]['ubicacion'] ?? 'Ubicación no disponible',
+                        platos[i]['ubicacion'] ?? 'Ubicación no disponible',
                         ubicacionUrl:
-                            platos[i]['ubicacionUrl'] ??
+                        platos[i]['ubicacionUrl'] ??
                             'https://www.google.com/maps',
                       ),
                     ),
@@ -232,10 +233,22 @@ class _PlatosScreenState extends State<PlatosScreen> {
                       Expanded(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(15),
-                          child: Image.asset(
-                            platos[i]['imagen'] ?? 'assets/default.jpg',
+                          child: CachedNetworkImage(
+                            imageUrl: platos[i]['imagen'] ?? '',
                             fit: BoxFit.cover,
                             width: double.infinity,
+                            placeholder: (context, url) => Container(
+                              color: Colors.grey[200],
+                              child: const Center(
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: Colors.grey[300],
+                              child: const Center(
+                                child: Icon(Icons.broken_image),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -308,16 +321,30 @@ class PlatoDetailScreen extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(15),
-              child: Image.asset(
-                imagen,
+              child: CachedNetworkImage(
+                imageUrl: imagen,
                 fit: BoxFit.cover,
                 width: double.infinity,
+                placeholder: (context, url) => Container(
+                  height: 200,
+                  color: Colors.grey[200],
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  height: 200,
+                  color: Colors.grey[300],
+                  child: const Center(
+                    child: Icon(Icons.broken_image, size: 48),
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 10),
-            Text(
+            const Text(
               'Descripción:',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             Text(descripcion),
             const SizedBox(height: 10),
@@ -326,9 +353,9 @@ class PlatoDetailScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            Text(
+            const Text(
               'Receta:',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             Text(receta),
             const SizedBox(height: 10),
@@ -337,9 +364,9 @@ class PlatoDetailScreen extends StatelessWidget {
               child: const Text('Ver video de preparación'),
             ),
             const SizedBox(height: 10),
-            Text(
+            const Text(
               'Ubicación:',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             Text(ubicacion),
             ElevatedButton(
