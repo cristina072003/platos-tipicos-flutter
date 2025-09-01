@@ -6,6 +6,8 @@ class Plato {
   final String categoria;
   final String imagenUrl;
   final List<String> lugares;
+  final double rating; // Nuevo campo agregado
+  final List<String> imagenes; // Nuevo campo agregado
 
   Plato({
     required this.id,
@@ -15,6 +17,8 @@ class Plato {
     required this.categoria,
     required this.imagenUrl,
     required this.lugares,
+    this.rating = 0.0, // Valor por defecto
+    this.imagenes = const [], // Valor por defecto
   });
 
   factory Plato.fromJson(Map<String, dynamic> json) {
@@ -26,6 +30,10 @@ class Plato {
       categoria: json['categoria'],
       imagenUrl: json['imagenUrl'],
       lugares: List<String>.from(json['lugares']),
+      rating: json['rating']?.toDouble() ?? 0.0, // Manejo del nuevo campo
+      imagenes: List<String>.from(
+        json['imagenes'] ?? [],
+      ), // Manejo del nuevo campo
     );
   }
 
@@ -37,6 +45,8 @@ class Plato {
       'categoria': categoria,
       'imagenUrl': imagenUrl,
       'lugares': lugares,
+      'rating': rating, // Inclusión del nuevo campo
+      'imagenes': imagenes, // Inclusión del nuevo campo
     };
   }
 }

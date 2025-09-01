@@ -3,12 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-
-import './providers/auth_provider.dart';
 import './providers/platos_provider.dart';
-import './screens/login_screen.dart';
 import './screens/platos_list_screen.dart';
-import './api/ubicaciones_api.dart';
+import './screens/splash_screen.dart';
 
 Future<void> main() async {
   try {
@@ -25,24 +22,29 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (ctx) => AuthProvider()),
-        ChangeNotifierProxyProvider<AuthProvider, PlatosProvider>(
-          create: (ctx) => PlatosProvider(),
-          update: (ctx, auth, previousPlatos) => PlatosProvider(),
+      providers: [ChangeNotifierProvider(create: (ctx) => PlatosProvider())],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Platos Cochabamba',
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          fontFamily: 'Lato',
         ),
-      ],
-      child: Consumer<AuthProvider>(
-        builder: (ctx, auth, _) => MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Platos Cochabamba',
-          theme: ThemeData(
-            useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-            fontFamily: 'Lato',
+        darkTheme: ThemeData(
+          brightness: Brightness.dark,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.blueGrey,
+            brightness: Brightness.dark,
           ),
-          home: const PlatosScreen(),
+          fontFamily: 'Lato',
         ),
+        themeMode: ThemeMode.system,
+        initialRoute: '/',
+        routes: {
+          '/': (ctx) => const SplashScreen(),
+          '/platos-list': (ctx) => const PlatosScreen(),
+        },
       ),
     );
   }
@@ -56,12 +58,9 @@ class PlatosScreen extends StatefulWidget {
 }
 
 class _PlatosScreenState extends State<PlatosScreen> {
-  late Future<List<Map<String, dynamic>>> _ubicaciones;
-
   @override
   void initState() {
     super.initState();
-    _ubicaciones = UbicacionesApi.fetchUbicaciones();
   }
 
   @override
@@ -72,102 +71,183 @@ class _PlatosScreenState extends State<PlatosScreen> {
       'Desayuno': [
         {
           'nombre': 'Salteña',
-          'imagen': 'https://i.pinimg.com/736x/12/23/a9/1223a95cc29983c68a4339e4afb848d4.jpg',
+          'imagen':
+              'https://i.pinimg.com/736x/12/23/a9/1223a95cc29983c68a4339e4afb848d4.jpg',
           'descripcion': 'Empanada rellena con carne y caldo.',
           'precio': 10.0,
           'receta': '1. Preparar masa. 2. Cocinar relleno. 3. Hornear.',
-          'videoUrl': 'https://www.youtube.com/watch?v=example5',
-          'ubicacion': 'Restaurante típico en Cochabamba.',
-          'ubicacionUrl': 'https://www.google.com/maps?q=Cochabamba',
+          'videoUrl':
+              'https://youtube.com/watch?v=VydD2si0MwI&si=wBEIzLS2y_nO0xbD',
+          'ubicacion': 'SALTEÑERÍA VICTORIA',
+          'ubicacionUrl': 'https://maps.app.goo.gl/DHSMjZV7U8ecUVG69',
         },
         {
           'nombre': 'Relleno',
-          'imagen': 'https://i.pinimg.com/1200x/4f/20/24/4f2024dc15495e606ecaf89f4180d92f.jpg',
+          'imagen':
+              'https://www.hotrodsrecipes.com/wp-content/uploads/2022/10/cuban-papas-rellenas.jpg',
           'descripcion': 'Plato típico con carne rellena y papas.',
           'precio': 15.0,
           'receta': '1. Preparar carne rellena. 2. Cocinar papas.',
           'videoUrl': 'https://www.youtube.com/watch?v=example6',
-          'ubicacion': 'Restaurante típico en Cochabamba.',
-          'ubicacionUrl': 'https://www.google.com/maps?q=Cochabamba',
+          'ubicacion': 'RELLENOS CALAMA',
+          'ubicacionUrl': 'https://maps.app.goo.gl/QLPXWdDAea6ToiUJ8',
         },
         {
           'nombre': 'Api con pastel',
-          'imagen': 'https://i.pinimg.com/1200x/9e/28/93/9e2893ad132da91cf708e6ed16a77f43.jpg',
+          'imagen':
+              'https://blog.amigofoods.com/wp-content/uploads/2023/01/popular-api-con-pastel.jpg',
           'descripcion': 'Bebida caliente de maíz morado con pastel.',
           'precio': 8.0,
           'receta': '1. Preparar api. 2. Freír pastel.',
           'videoUrl': 'https://www.youtube.com/watch?v=example7',
-          'ubicacion': 'Restaurante típico en Cochabamba.',
-          'ubicacionUrl': 'https://www.google.com/maps?q=Cochabamba',
+          'ubicacion': 'APIS XPRESS',
+          'ubicacionUrl': 'https://maps.app.goo.gl/KS7hpd5jWtzTKbaP7',
         },
         {
           'nombre': 'Empanadas Wistupiku',
-          'imagen': 'https://i.pinimg.com/736x/4c/fe/a8/4cfea82f4027c934a99cd8a4ebad3e4c.jpg',
+          'imagen':
+              'https://tse1.mm.bing.net/th/id/OIP.rq3C20dP_gx4Cvf-quowLQHaIv?rs=1&pid=ImgDetMain&o=7&rm=3',
           'descripcion': 'Empanadas típicas de Cochabamba.',
           'precio': 12.0,
           'receta': '1. Preparar masa. 2. Cocinar relleno. 3. Hornear.',
           'videoUrl': 'https://www.youtube.com/watch?v=example8',
-          'ubicacion': 'Restaurante típico en Cochabamba.',
-          'ubicacionUrl': 'https://www.google.com/maps?q=Cochabamba',
+          'ubicacion': 'WISTUPIKU',
+          'ubicacionUrl': 'https://maps.app.goo.gl/1W98R5F7cravXzzp6',
+        },
+        {
+          'nombre': 'Caldo de Kawi',
+          'imagen':
+              'https://recetasbolivia.com/wp-content/uploads/caldo-de-kawi-Boliviano.jpg',
+          'descripcion': 'Caldo tradicional de cerdo con chuño y hierbas.',
+          'precio': 18.0,
+          'receta': '1. Cocinar cerdo. 2. Preparar chuño. 3. Añadir hierbas.',
+          'videoUrl': 'https://www.youtube.com/watch?v=example9',
+          'ubicacion': 'SAN JORGE CALDOS DE LA MAÑANA',
+          'ubicacionUrl': 'https://maps.app.goo.gl/WwGMq2kKhHfbg7R68',
+        },
+        {
+          'nombre': 'Humintas',
+          'imagen':
+              'https://lh4.googleusercontent.com/-rdPWgg3V510/TYwcFxkMN-I/AAAAAAAAAB8/YbHxLKL-KJY/s1600/humintas.jpg',
+          'descripcion': 'Tamales dulces de maíz envueltos en hojas de maíz.',
+          'precio': 5.0,
+          'receta': '1. Moler maíz. 2. Preparar masa. 3. Cocinar al vapor.',
+          'videoUrl': 'https://www.youtube.com/watch?v=example10',
+          'ubicacion': 'HUMINTAS "QUE CHALITA"',
+          'ubicacionUrl': 'https://maps.app.goo.gl/FGN9AGXmXwmLSEec9',
+        },
+        {
+          'nombre': 'Marraqueta con cafe',
+          'imagen':
+              'https://i.pinimg.com/736x/94/ca/79/94ca79402d0acc37af15c564f70fb476.jpg',
+          'descripcion': 'Pan crujiente acompañado de cafe caliente',
+          'precio': 7.0,
+          'receta': '1. Preparar pan. 2. Servir con cafe.',
+          'videoUrl': 'https://www.youtube.com/watch?v=example11',
+          'ubicacion': 'MARRAQUETA ECO SANDWICH',
+          'ubicacionUrl': 'https://maps.app.goo.gl/kWP3VB3EPn331ryK9',
         },
       ],
       'Almuerzo': [
         {
           'nombre': 'Silpancho',
           'imagen':
-          'https://i.pinimg.com/736x/3a/f6/03/3af603235909c360a2465c3578eb21f1.jpg',
+              'https://okdiario.com/img/2020/05/05/receta-de-silpancho-boliviano.jpg',
           'descripcion':
-          'Plato típico de Cochabamba con carne apanada, arroz y huevo.',
+              'Plato típico de Cochabamba con carne apanada, arroz y huevo.',
           'precio': 25.0,
           'receta':
-          '1. Preparar carne apanada. 2. Cocinar arroz y papas. 3. Freír huevo.',
+              '1. Preparar carne apanada. 2. Cocinar arroz y papas. 3. Freír huevo.',
           'videoUrl': 'https://www.youtube.com/watch?v=example',
-          'ubicacion': 'Restaurante típico en Cochabamba.',
-          'ubicacionUrl': 'https://www.google.com/maps?q=Quillacollo',
+          'ubicacion': 'Restaurante típico en Cochabamba',
+          'ubicacionUrl': 'https://maps.google.com/?q=Quillacollo+Bolivia',
         },
         {
           'nombre': 'Pique Macho',
-          'imagen': 'https://i.pinimg.com/736x/75/78/e7/7578e71c7245f487a2d7a37ea2cbf646.jpg',
+          'imagen':
+              'https://i.pinimg.com/736x/75/78/e7/7578e71c7245f487a2d7a37ea2cbf646.jpg',
           'descripcion':
-          'Plato típico con carne, papas fritas y salsa picante.',
+              'Plato típico con carne, papas fritas y salsa picante.',
           'precio': 30.0,
           'receta':
-          '1. Cocinar carne. 2. Freír papas. 3. Preparar salsa picante.',
+              '1. Cocinar carne. 2. Freír papas. 3. Preparar salsa picante.',
           'videoUrl': 'https://www.youtube.com/watch?v=example2',
-          'ubicacion': 'Restaurante típico en Cochabamba.',
-          'ubicacionUrl': 'https://www.google.com/maps?q=Quillacollo',
+          'ubicacion': 'Restaurante típico en Cochabamba',
+          'ubicacionUrl': 'https://maps.google.com/?q=Quillacollo+Bolivia',
         },
         {
           'nombre': 'Chicharrón',
-          'imagen': 'https://i.pinimg.com/1200x/60/1e/0e/601e0e8bedc0d4c27d7c68d2092974a3.jpg',
+          'imagen':
+              'https://i.pinimg.com/1200x/60/1e/0e/601e0e8bedc0d4c27d7c68d2092974a3.jpg',
           'descripcion': 'Plato típico con carne de cerdo frita y mote.',
           'precio': 35.0,
           'receta': '1. Freír carne de cerdo. 2. Cocinar mote.',
           'videoUrl': 'https://www.youtube.com/watch?v=example3',
-          'ubicacion': 'Restaurante típico en Cochabamba.',
-          'ubicacionUrl': 'https://www.google.com/maps?q=Sacaba',
+          'ubicacion': 'Restaurante típico en Cochabamba',
+          'ubicacionUrl': 'https://maps.google.com/?q=Sacaba+Bolivia',
         },
         {
           'nombre': 'Sopa de Maní',
-          'imagen': 'https://i.pinimg.com/736x/d9/55/bd/d955bd3d164e8d62f9c32b0ab7253b5c.jpg',
+          'imagen':
+              'https://i.pinimg.com/736x/d9/55/bd/d955bd3d164e8d62f9c32b0ab7253b5c.jpg',
           'descripcion': 'Sopa típica con maní, carne y papas.',
           'precio': 20.0,
           'receta': '1. Preparar caldo con maní. 2. Cocinar carne y papas.',
           'videoUrl': 'https://www.youtube.com/watch?v=example4',
-          'ubicacion': 'Restaurante típico en Cochabamba.',
-          'ubicacionUrl': 'https://www.google.com/maps?q=Sacaba',
+          'ubicacion': 'Restaurante típico en Cochabamba',
+          'ubicacionUrl': 'https://maps.google.com/?q=Sacaba+Bolivia',
+        },
+        {
+          'nombre': 'Lapping',
+          'imagen':
+              'https://tse3.mm.bing.net/th/id/OIP.PmIarPznNQy7KQmpj_6twgHaE8?rs=1&pid=ImgDetMain&o=7&rm=3',
+          'descripcion':
+              'Carne de res asada al sartén, acompañada de mote, habas, papa y ensalada de tomate y cebolla.',
+          'precio': 28.0,
+          'receta':
+              '1. Asar el pecho de vaca. 2. Cocinar el mote, habas y papas. 3. Preparar una ensalada de cebolla y tomate.',
+          'videoUrl': 'https://www.youtube.com/watch?v=aAtnnqGMzDU',
+          'ubicacion': 'Restaurante típico en Cochabamba',
+          'ubicacionUrl': 'https://maps.google.com/?q=Cochabamba+Bolivia',
+        },
+        {
+          'nombre': 'Chancho a la Cruz',
+          'imagen':
+              'https://i.pinimg.com/736x/8d/e2/60/8de260944a5d9ffe10088845d0404c51.jpg',
+          'descripcion':
+              'Cerdo entero cocinado lentamente en una cruz de metal sobre fuego de leña, resultando en una carne tierna y jugosa con un cuero muy crocante.',
+          'precio': 35.0,
+          'receta':
+              '1. Marinar el cerdo con sal, limón y especias. 2. Atar el cerdo a una cruz de metal. 3. Cocinar a fuego lento por varias horas, girándolo y rociándolo con cerveza para mantenerlo húmedo.',
+          'videoUrl': 'https://www.youtube.com/watch?v=EoapLgv8Ho4',
+          'ubicacion': 'Restaurantes especializados en Cochabamba',
+          'ubicacionUrl': 'https://maps.google.com/?q=Cochabamba+Bolivia',
         },
       ],
       'Cena': [
         {
           'nombre': 'Anticucho',
-          'imagen': 'https://i.pinimg.com/736x/57/68/69/576869dac070f70e8518c1025b75d3b6.jpg',
+          'imagen':
+              'https://i.pinimg.com/736x/57/68/69/576869dac070f70e8518c1025b75d3b6.jpg',
           'descripcion': 'Plato típico con carne a la parrilla y papas.',
           'precio': 18.0,
           'receta': '1. Preparar carne. 2. Cocinar papas. 3. Servir con salsa.',
           'videoUrl': 'https://www.youtube.com/watch?v=example9',
-          'ubicacion': 'Restaurante típico en Cochabamba.',
-          'ubicacionUrl': 'https://www.google.com/maps?q=Cochabamba',
+          'ubicacion': 'Restaurante típico en Cochabamba',
+          'ubicacionUrl': 'https://maps.google.com/?q=Cochabamba+Bolivia',
+        },
+        {
+          'nombre': 'Tripitas',
+          'imagen':
+              'https://azafranbolivia.com/wp-content/uploads/2023/01/tripitas-bolivia-origen-beneficios-preparacion.jpg',
+          'descripcion':
+              'Plato popular de comida callejera que consiste en intestinos de res trenzados y fritos hasta quedar crujientes. Se sirve con papas y llajwa.',
+          'precio': 15.0,
+          'receta':
+              '1. Limpiar y hervir las tripas. 2. Trenzar y freír las tripas. 3. Servir con papas y salsa picante (llajwa).',
+          'videoUrl': 'https://www.youtube.com/watch?v=1_q4gE73f8Y',
+          'ubicacion': 'Puestos de comida nocturna en Cochabamba',
+          'ubicacionUrl': 'https://maps.google.com/?q=Cochabamba+Bolivia',
         },
       ],
     };
@@ -184,7 +264,9 @@ class _PlatosScreenState extends State<PlatosScreen> {
             indicatorColor: cs.onPrimary,
             labelColor: cs.onPrimary,
             unselectedLabelColor: cs.onPrimary.withOpacity(0.7),
-            tabs: categorias.keys.map((categoria) => Tab(text: categoria)).toList(),
+            tabs: categorias.keys
+                .map((categoria) => Tab(text: categoria))
+                .toList(),
           ),
         ),
         body: TabBarView(
@@ -217,14 +299,6 @@ class _PlatosScreenState extends State<PlatosScreen> {
         ),
       ),
     );
-  }
-
-  void _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'No se pudo abrir el enlace: $url';
-    }
   }
 }
 
@@ -278,7 +352,6 @@ class _PlatoCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Imagen con Hero + overlay de precio
             Expanded(
               child: Stack(
                 children: [
@@ -290,7 +363,9 @@ class _PlatoCard extends StatelessWidget {
                       width: double.infinity,
                       placeholder: (context, url) => Container(
                         color: Colors.grey[200],
-                        child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                        child: const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
                       ),
                       errorWidget: (context, url, error) => Container(
                         color: Colors.grey[300],
@@ -318,9 +393,9 @@ class _PlatoCard extends StatelessWidget {
                 nombre,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
               ),
             ),
           ],
@@ -353,10 +428,15 @@ class PlatoDetailScreen extends StatelessWidget {
   });
 
   void _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'No se pudo abrir el enlace: $url';
+    try {
+      final Uri uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        throw 'No se pudo abrir el enlace: $url';
+      }
+    } catch (e) {
+      print('Error al abrir URL: $e');
     }
   }
 
@@ -385,7 +465,9 @@ class PlatoDetailScreen extends StatelessWidget {
                   ),
                   errorWidget: (context, url, error) => Container(
                     color: Colors.grey[300],
-                    child: const Center(child: Icon(Icons.broken_image, size: 48)),
+                    child: const Center(
+                      child: Icon(Icons.broken_image, size: 48),
+                    ),
                   ),
                 ),
               ),
