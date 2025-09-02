@@ -45,6 +45,7 @@ Una aplicación móvil Flutter que muestra los platos típicos de Cochabamba, co
 · URL Launcher - Apertura de enlaces externos
 · Google Maps - Integración con mapas
 · YouTube - Videos de preparación
+. base de datos estatico
 
 📦 Instalación
 
@@ -61,3 +62,4 @@ Funcionalidades Técnicas
 · Caché de imágenes para mejor performance
 · Lanzamiento de URLs externas (YouTube, Google Maps)
 · Diseño adaptable para diferentes tamaños de pantalla
+
