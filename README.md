@@ -63,3 +63,5 @@ Funcionalidades Técnicas
 · Lanzamiento de URLs externas (YouTube, Google Maps)
 · Diseño adaptable para diferentes tamaños de pantalla
 
+
+[proyecto final de aplicacion movil.pdf](https://github.com/user-attachments/files/22085906/proyecto.final.de.aplicacion.movil.pdf)
